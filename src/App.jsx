@@ -9,7 +9,7 @@ function App() {
   return (
     <>
       <Header setModal={setModal} />
-      <div className="grid grid-cols-4 gap-10 px-10 py-5">
+      <div>
         <Cards />
       </div>
       {modal && <Modal setModal={setModal} />}
