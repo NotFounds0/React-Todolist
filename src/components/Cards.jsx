@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Buttons from "./Buttons";
 import { Trash2 } from "lucide-react";
+import Swal from "sweetalert2";
 
 const Cards = () => {
   const [formDataList, setFormDataList] = useState([]);
@@ -11,9 +12,19 @@ const Cards = () => {
   }, []);
 
   const handleDelete = (id) => {
-    const updatedList = formDataList.filter((item) => item.id !== id);
-    localStorage.setItem("formData", JSON.stringify(updatedList));
-    setFormDataList(updatedList);
+    Swal.fire({
+      title: "Silmek İstediğinize Emin'misiniz?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sil",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire("Başarılı!", "", "success");
+        const updatedList = formDataList.filter((item) => item.id !== id);
+        localStorage.setItem("formData", JSON.stringify(updatedList));
+        setFormDataList(updatedList);
+      }
+    });
   };
 
   const toggleCompletion = (id) => {
@@ -35,7 +46,11 @@ const Cards = () => {
           {formDataList.map((data) => (
             <div
               key={data.id}
-              className="w-full flex flex-col h-full px-5 py-2 bg-white shadow-md rounded-lg relative"
+              className={`${
+                data.completed
+                  ? "w-full flex flex-col h-full px-5 py-2 bg-gray-200 shadow-md rounded-lg relative"
+                  : "w-full flex flex-col h-full px-5 py-2 bg-white shadow-md rounded-lg relative"
+              }`}
             >
               <div className="flex justify-between items-center mb-2">
                 <h2 className="text-lg font-semibold text-gray-800">
@@ -62,7 +77,7 @@ const Cards = () => {
               <div className="flex justify-between items-end grow">
                 <Buttons
                   onClick={() => toggleCompletion(data.id)}
-                  className="text-sm text-green-400 border border-green-500 px-4 py-2 rounded-lg hover:bg-green-500 hover:text-white transition-colors"
+                  className="text-sm text-black border border-green-500 px-4 py-2 rounded-lg hover:bg-green-500 hover:text-white transition-colors"
                   text={data.completed ? "Tamamlandı" : "Tamamla"}
                 />
                 <span className="text-xs text-gray-500">
@@ -73,7 +88,9 @@ const Cards = () => {
           ))}
         </div>
       ) : (
-        <span>Veri Yok</span>
+        <div className="bg-red-400 text-white py-2 text-center">
+          <span>Hiç Todo Girilmemiş!</span>
+        </div>
       )}
     </>
   );
